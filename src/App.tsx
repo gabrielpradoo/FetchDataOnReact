@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-
-// Default method to fetch data on React
+import { useFetch } from "./hooks/useFetch";
 
 type Repository = {
   name: string;
@@ -8,29 +6,20 @@ type Repository = {
 };
 
 function App() {
-  const [repositories, setRepositories] = useState<Repository[]>([]);
-
-  useEffect(() => {
-    fetch("https://api.github.com/users/gabrielpradoo/repos")
-      .then((response) => response.json())
-      .then((data) => {
-        setRepositories(data);
-      });
-
-    console.log(repositories);
-  }, []);
+  const { data: repositories, isFetching } = useFetch<Repository[]>(
+    "users/gabrielpradoo/repos"
+  );
 
   return (
-    <div>
-      {repositories.map((repositories) => (
-        <div>
-          <h3>{repositories.name}</h3>
-          <p>{repositories.description}</p>
-          <br />
-          <br />
-        </div>
+    <ul>
+      {isFetching && <p>Carregando</p>}
+      {repositories?.map((repo) => (
+        <li key={repo.name}>
+          <strong>{repo.name}</strong>
+          <p>{repo.description}</p>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 
